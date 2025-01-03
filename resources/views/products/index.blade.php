@@ -8,42 +8,58 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.bootstrap5.css">
+    <style>
+        .navbar {
+            background-color: #343a40 !important;
+        }
+
+        .navbar-brand {
+            color: #fff !important;
+        }
+
+        .card-header {
+            background-color: #007bff !important;
+            color: #fff !important;
+        }
+
+        .btn-primary {
+            background-color: #007bff !important;
+            border-color: #007bff !important;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3 !important;
+            border-color: #004085 !important;
+        }
+
+        .table thead th {
+            background-color: #007bff !important;
+            color: #fff !important;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">Laravel Ajax</a>
+            <a class="navbar-brand" href="#">Product List</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Pricing</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                    </li>
-                </ul>
-            </div>
         </div>
     </nav>
 
     <div class="container mt-5">
-        <div class="card">
+        <div class="card shadow-sm">
             <div class="card-header">Table Products</div>
             <div class="card-body">
-                <button class="btn btn-primary mb-1" onclick="showModal()">Create</button>
+                <button class="btn btn-primary mb-3" onclick="showModal()">Create</button>
                 <table class="table table-bordered table-striped" id="tableProduct">
                     <thead>
                         <tr>
@@ -52,12 +68,11 @@
                             <th>Slug URL</th>
                             <th>Description</th>
                             <th>Price</th>
+                            <th>Image</th>
                             <th width="10%">Action</th>
                         </tr>
                     </thead>
-
                     <tbody>
-
                     </tbody>
                 </table>
             </div>
@@ -72,13 +87,10 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.bootstrap5.js"></script>
     <script src="https://cdn.datatables.net/rowreorder/1.5.0/js/dataTables.rowReorder.js"></script>
     <script src="https://cdn.datatables.net/rowreorder/1.5.0/js/rowReorder.bootstrap5.js"></script>
-
-    <!-- Laravel Javascript Validation -->
     <script type="text/javascript" src="{{ asset('vendor/jsvalidation/js/jsvalidation.js') }}"></script>
 
     {!! JsValidator::formRequest('App\Http\Requests\ProductRequest', '#productForm') !!}
@@ -117,6 +129,10 @@
                         name: 'price',
                     },
                     {
+                        data: 'image',
+                        name: 'image',
+                    },
+                    {
                         data: 'action',
                         name: 'action',
                     },
@@ -141,7 +157,6 @@
             $('.btnSubmit').text('Create')
         }
 
-        // store & update product
         $('#productForm').on('submit', function(e) {
             e.preventDefault();
 
@@ -179,12 +194,11 @@
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.log(jqXHR.responseText);
-                    alert('Error: '+ jqXHR.responseText);
+                    alert('Error: ' + jqXHR.responseText);
                 }
             });
         });
 
-        // show edited product
         function editModal(e) {
             let id = e.getAttribute('data-id');
 
@@ -205,7 +219,7 @@
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.log(jqXHR.responseText);
-                    alert('Error displaying data: '+ jqXHR.responseText);
+                    alert('Error displaying data: ' + jqXHR.responseText);
                 }
             });
 
@@ -217,7 +231,6 @@
             $('.btnSubmit').text('Update')
         }
 
-        // destroy product
         function deleteModal(e) {
             let id = e.getAttribute('data-id');
 
@@ -230,30 +243,32 @@
                 cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Yes'
             }).then((result) => {
-                $.ajax({
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    type: "DELETE",
-                    url: "products/" + id,
-                    dataTye: 'json',
-                    success: (response) => {
-                        $('#productModal').modal('hide');
-                        $('#tableProduct').DataTable().ajax.reload();
+                if (result.value) {
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        type: "DELETE",
+                        url: "products/" + id,
+                        dataTye: 'json',
+                        success: (response) => {
+                            $('#productModal').modal('hide');
+                            $('#tableProduct').DataTable().ajax.reload();
 
-                        Swal.fire({
-                            title: "Good job!",
-                            text: response.message,
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500,
-                        });
-                    },
-                    error: (jqXHR, textStatus, errorThrown) => {
-                        console.log(jqXHR.responseText);
-                        alert(jqXHR.responseText);
-                    }
-                });
+                            Swal.fire({
+                                title: "Good job!",
+                                text: response.message,
+                                icon: "success",
+                                showConfirmButton: false,
+                                timer: 1500,
+                            });
+                        },
+                        error: (jqXHR, textStatus, errorThrown) => {
+                            console.log(jqXHR.responseText);
+                            alert(jqXHR.responseText);
+                        }
+                    });
+                }
             })
         }
     </script>
