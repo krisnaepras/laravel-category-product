@@ -1,0 +1,58 @@
+
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Navbar */
+    nav a {
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    nav a:hover {
+        background-color: rgba(59, 130, 246, 0.1);
+    }
+
+    /* Buttons */
+    button {
+        transition: all 0.3s ease-in-out;
+    }
+
+    button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Table */
+    table thead tr {
+        background-color: #f8fafc;
+    }
+
+    table tbody tr:nth-child(even) {
+        background-color: #f1f5f9;
+    }
+
+    table tbody tr:hover {
+        background-color: #e2e8f0;
+        cursor: pointer;
+    }
+
+    table th, table td {
+        padding: 1rem;
+        text-align: left;
+    }
+
+    /* Modal (if applicable) */
+    .modal-header {
+        background-color: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .modal-footer button {
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .modal-footer button:hover {
+        background-color: rgba(59, 130, 246, 0.1);
+    }

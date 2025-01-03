@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
+use App\Http\Requests\UpdateProductRequest;
+use App\Services\ImageService;
 use App\Services\ProductService;
 use Exception;
 use Illuminate\Contracts\View\View;
@@ -11,7 +13,7 @@ use Illuminate\Http\JsonResponse;
 
 class ProductController extends Controller
 {
-    public function __construct(private ProductService $productService){}
+    public function __construct(private ProductService $productService, private ImageService $imageService){}
     /**
      * Display a listing of the resource.
      */
@@ -27,9 +29,16 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
-        $this->productService->create($data);
+        try {
+            $uploadImg = $this->imageService->uploadImg($data);
+            $data['image'] = $uploadImg;
 
-        return response()->json(['message' => 'Product created successfully']);
+            $this->productService->create($data);
+
+            return response()->json(['message' => 'Product created successfully']);
+        } catch (Exception $e) {
+            return response()->json(['title' => 'Error','text' => $e->getMessage(), 'icon' => 'error']);
+        }
     }
 
     /**
@@ -50,10 +59,16 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductRequest $request, string $id)
+    public function update(UpdateProductRequest $request, string $id)
     {
         $data = $request->validated();
+
+        $getImage = $this->productService->getByUuid($id);
+
         try{
+            $uploadImg = $this->imageService->uploadImg($data, $getImage->image);
+            $data['image'] = $uploadImg;
+
             $this->productService->update($data, $id);
             return response()->json(['title' => 'Good Job','text' => 'Product updated successfully', 'icon' => 'success']);
 
