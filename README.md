@@ -39,15 +39,19 @@ Proyek ini adalah implementasi dari sistem list produk menggunakan framework Lar
    ```bash
    composer install
    ```
-4. Salin file `.env.example` menjadi `.env` dan sesuaikan konfigurasi database:
+4. Instal dependensi menggunakan Composer:
+   ```bash
+   npm install && npm run build
+   ```
+5. Salin file `.env.example` menjadi `.env` dan sesuaikan konfigurasi database:
    ```bash
    cp .env.example .env
    ```
-5. Buat kunci aplikasi:
+6. Buat kunci aplikasi:
    ```bash
    php artisan key:generate
    ```
-6. Migrasi database:
+7. Migrasi database:
    ```bash
    php artisan migrate
    ```
