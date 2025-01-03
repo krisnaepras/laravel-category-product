@@ -84,6 +84,8 @@
     {!! JsValidator::formRequest('App\Http\Requests\ProductRequest', '#productForm') !!}
 
     <script>
+        let save_method;
+
         $(document).ready(function() {
             productsTable();
         });
@@ -122,8 +124,18 @@
             })
         }
 
+        function resetValidation() {
+            $('.is-invalid').removeClass('is-invalid');
+            $('.is-valid').removeClass('is-valid');
+            $('span.invalid-feedback').remove();
+        }
+
         function showModal() {
+            $('#productForm')[0].reset();
+            resetValidation();
             $('#productModal').modal('show')
+
+            save_method = 'create';
 
             $('.modal-title').text('Create New Product')
             $('.btnSubmit').text('Create')
@@ -135,12 +147,21 @@
 
             const formData = new FormData(this);
 
+            let url, method;
+            url = 'products';
+            method = 'POST';
+
+            if (save_method === 'update') {
+                url = 'products/' + $('#id').val();
+                formData.append('_method', 'PUT');
+            }
+
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                type: "POST",
-                url: "products",
+                type: method,
+                url: url,
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -158,7 +179,6 @@
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.log(jqXHR.responseText);
-                    alert(jqXHR.responseText);
                 }
             });
         });
@@ -167,6 +187,8 @@
         function editModal(e) {
             let id = e.getAttribute('data-id');
 
+            save_method = "update";
+
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -174,16 +196,19 @@
                 type: "GET",
                 url: "products/" + id,
                 success: (response) => {
-                    $('#name').val(response.data.name);
-                    $('#description').val(response.data.description);
-                    $('#price').val(response.data.price);
-                    $('#id').val(response.data.id);
+                    let result = response.data;
+                    $('#name').val(result.name);
+                    $('#description').val(result.description);
+                    $('#price').val(result.price);
+                    $('#id').val(result.id);
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.log(jqXHR.responseText);
                     alert(jqXHR.responseText);
                 }
             });
+
+            resetValidation();
 
             $('#productModal').modal('show')
 
