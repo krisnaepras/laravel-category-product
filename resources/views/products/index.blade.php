@@ -52,6 +52,11 @@
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <!-- Tambahkan item navbar di sini jika diperlukan -->
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -59,22 +64,26 @@
         <div class="card shadow-sm">
             <div class="card-header">Table Products</div>
             <div class="card-body">
-                <button class="btn btn-primary mb-3" onclick="showModal()">Create</button>
-                <table class="table table-bordered table-striped" id="tableProduct">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Name</th>
-                            <th>Slug URL</th>
-                            <th>Description</th>
-                            <th>Price</th>
-                            <th>Image</th>
-                            <th width="10%">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end me-3">
+                    <button class="btn btn-primary mb-3" onclick="showModal()">Create</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped" id="tableProduct">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Name</th>
+                                <th>Slug URL</th>
+                                <th>Description</th>
+                                <th>Price</th>
+                                <th>Image</th>
+                                <th width="10%">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -108,36 +117,16 @@
                 serverSide: true,
                 responsive: true,
                 ajax: 'products/dataTable',
-                columns: [{
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                    },
-                    {
-                        data: 'name',
-                        name: 'name',
-                    },
-                    {
-                        data: 'slug',
-                        name: 'slug',
-                    },
-                    {
-                        data: 'description',
-                        name: 'description',
-                    },
-                    {
-                        data: 'price',
-                        name: 'price',
-                    },
-                    {
-                        data: 'image',
-                        name: 'image',
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                    },
+                columns: [
+                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
+                    { data: 'name', name: 'name' },
+                    { data: 'slug', name: 'slug' },
+                    { data: 'description', name: 'description' },
+                    { data: 'price', name: 'price' },
+                    { data: 'image', name: 'image' },
+                    { data: 'action', name: 'action' }
                 ]
-            })
+            });
         }
 
         function resetValidation() {
@@ -149,22 +138,17 @@
         function showModal() {
             $('#productForm')[0].reset();
             resetValidation();
-            $('#productModal').modal('show')
-
+            $('#productModal').modal('show');
             save_method = 'create';
-
-            $('.modal-title').text('Create New Product')
-            $('.btnSubmit').text('Create')
+            $('.modal-title').text('Create New Product');
+            $('.btnSubmit').text('Create');
         }
 
         $('#productForm').on('submit', function(e) {
             e.preventDefault();
-
             const formData = new FormData(this);
-
-            let url, method;
-            url = 'products';
-            method = 'POST';
+            let url = 'products';
+            let method = 'POST';
 
             if (save_method === 'update') {
                 url = 'products/' + $('#id').val();
@@ -172,9 +156,7 @@
             }
 
             $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 type: method,
                 url: url,
                 data: formData,
@@ -183,7 +165,6 @@
                 success: (response) => {
                     $('#productModal').modal('hide');
                     $('#tableProduct').DataTable().ajax.reload();
-
                     Swal.fire({
                         title: response.title,
                         text: response.text,
@@ -201,13 +182,10 @@
 
         function editModal(e) {
             let id = e.getAttribute('data-id');
-
             save_method = "update";
 
             $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                 type: "GET",
                 url: "products/" + id,
                 success: (response) => {
@@ -224,16 +202,13 @@
             });
 
             resetValidation();
-
-            $('#productModal').modal('show')
-
-            $('.modal-title').text('Update New Product')
-            $('.btnSubmit').text('Update')
+            $('#productModal').modal('show');
+            $('.modal-title').text('Update New Product');
+            $('.btnSubmit').text('Update');
         }
 
         function deleteModal(e) {
             let id = e.getAttribute('data-id');
-
             Swal.fire({
                 title: 'Delete?',
                 text: 'Are you sure?',
@@ -245,16 +220,13 @@
             }).then((result) => {
                 if (result.value) {
                     $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
+                        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
                         type: "DELETE",
                         url: "products/" + id,
                         dataTye: 'json',
                         success: (response) => {
                             $('#productModal').modal('hide');
                             $('#tableProduct').DataTable().ajax.reload();
-
                             Swal.fire({
                                 title: "Good job!",
                                 text: response.message,
@@ -269,7 +241,7 @@
                         }
                     });
                 }
-            })
+            });
         }
     </script>
 </body>

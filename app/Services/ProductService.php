@@ -40,23 +40,23 @@ class ProductService
         public function getDatatable()
         {
             $product = Product::latest()->get();
-
-        return DataTables::of($product)
-        ->addIndexColumn()
-        ->editColumn('image', function ($row) {
-            return '<div class="text-center">
-                        <a href="'.asset('storage/images/'.$row->image).'">
-                            <img src="'.asset('storage/images/'.$row->image).'" alt="'.$row->name.'" class="img-fluid">
-                        </a>
-                    </div>';
-        })
-        ->addColumn('action', function ($row) {
-            return '<div class="text-center">
-                        <button class="btn btn-sm btn-success" onclick="editModal(this)" data-id="' . $row->uuid . '">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteModal(this)" data-id="' . $row->uuid . '">Delete</button>
-                    </div>';
-        })
-        ->rawColumns(['image', 'action'])
-        ->make();
+        
+            return DataTables::of($product)
+                ->addIndexColumn()
+                ->editColumn('image', function ($row) {
+                    return '<div class="text-center">
+                                <a href="'.asset('storage/images/'.$row->image).'">
+                                    <img src="'.asset('storage/images/'.$row->image).'" alt="'.$row->name.'" class="img-thumbnail" style="width: 100px; height: auto;">
+                                </a>
+                            </div>';
+                })
+                ->addColumn('action', function ($row) {
+                    return '<div class="text-center">
+                                <button class="btn btn-sm btn-success" onclick="editModal(this)" data-id="' . $row->uuid . '">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteModal(this)" data-id="' . $row->uuid . '">Delete</button>
+                            </div>';
+                })
+                ->rawColumns(['image', 'action'])
+                ->make();
         }
     }
