@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,7 +29,8 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
-        $data['slug'] = Str::slug($data['name']);
+        $data['uuid'] = Str::uuid();
+        $data['slug'] = Str::slug(title: $data['name']);
         Product::create($data);
 
         return response()->json(['message' => 'Product created successfully']);
@@ -39,9 +41,13 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        return response()->json([
-            'data' => Product::find($id)
-        ]);
+        try {
+            return response()->json([
+                'data' => Product::where('uuid', $id)->firstOrFail()
+            ]);
+        } catch (Exception $e) {
+            //throw $th;
+        }
     }
 
 
@@ -50,12 +56,17 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $id)
     {
-        $data = $request->validated();
+        try{
+            $data = $request->validated();
+    
+            $data['slug'] = Str::slug(title: $data['name']);
+            $product = Product::where('uuid', $id)->update($data);
+    
+            return response()->json(['title' => 'Good Job','text' => 'Product updated successfully', 'icon' => 'success']);
 
-        $data['slug'] = Str::slug($data['name']);
-        Product::find($id)->update($data);
-
-        return response()->json(['message' => 'Product updated successfully']);
+        } catch (Exception $e) {
+            return response()->json(['title' => 'Error','text' => $e->getMessage(), 'icon' => 'error']);
+        }
     }
 
     /**
@@ -63,7 +74,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        Product::destroy($id);
+        Product::where('uuid', $id)->firstOrFail()->delete();
 
         return response()->json(['message' => 'Product deleted successfully']);
 
@@ -77,8 +88,8 @@ class ProductController extends Controller
         ->addIndexColumn()
         ->addColumn('action', function ($row) {
             return '<div class="text-center">
-                        <button class="btn btn-sm btn-success" onclick="editModal(this)" data-id="' . $row->id . '">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteModal(this)" data-id="' . $row->id . '">Delete</button>
+                        <button class="btn btn-sm btn-success" onclick="editModal(this)" data-id="' . $row->uuid . '">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteModal(this)" data-id="' . $row->uuid . '">Delete</button>
                     </div>';
         })
         ->make();
