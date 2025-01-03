@@ -8,6 +8,7 @@
             </div>
             <div class="modal-body">
                 <form action="#" id="productForm">
+                    <input type="hidden" name="id" id="id">
                     <div class="mb3">
                         <label for="name">Nama</label>
                         <input type="text" name="name" class="form-control" id="name">

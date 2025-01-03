@@ -124,8 +124,15 @@
             })
         }
 
+        function resetValidation() {
+            $('.is-invalid').removeClass('is-invalid');
+            $('.is-valid').removeClass('is-valid');
+            $('span.invalid-feedback').remove();
+        }
+
         function showModal() {
             $('#productForm')[0].reset();
+            resetValidation();
             $('#productModal').modal('show')
 
             save_method = 'create';
@@ -142,6 +149,7 @@
 
             let url, method;
             url = 'products';
+            method = 'POST';
 
             if (save_method === 'update') {
                 url = 'products/' + $('#id').val();
@@ -171,7 +179,6 @@
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.log(jqXHR.responseText);
-                    alert(jqXHR.responseText);
                 }
             });
         });
@@ -200,6 +207,8 @@
                     alert(jqXHR.responseText);
                 }
             });
+
+            resetValidation();
 
             $('#productModal').modal('show')
 
