@@ -170,15 +170,16 @@
                     $('#tableProduct').DataTable().ajax.reload();
 
                     Swal.fire({
-                        title: "Good job!",
-                        text: response.message,
-                        icon: "success",
+                        title: response.title,
+                        text: response.text,
+                        icon: response.icon,
                         showConfirmButton: false,
                         timer: 1500,
                     });
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.log(jqXHR.responseText);
+                    alert('Error: '+ jqXHR.responseText);
                 }
             });
         });
@@ -200,11 +201,11 @@
                     $('#name').val(result.name);
                     $('#description').val(result.description);
                     $('#price').val(result.price);
-                    $('#id').val(result.id);
+                    $('#id').val(result.uuid);
                 },
                 error: (jqXHR, textStatus, errorThrown) => {
                     console.log(jqXHR.responseText);
-                    alert(jqXHR.responseText);
+                    alert('Error displaying data: '+ jqXHR.responseText);
                 }
             });
 
