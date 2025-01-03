@@ -3,17 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
-use App\Models\Product;
+use App\Services\ProductService;
 use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
-use Illuminate\Support\Str;
-use Yajra\DataTables\DataTables;
 
 class ProductController extends Controller
 {
+    public function __construct(private ProductService $productService){}
     /**
      * Display a listing of the resource.
      */
@@ -29,9 +27,7 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
-        $data['uuid'] = Str::uuid();
-        $data['slug'] = Str::slug(title: $data['name']);
-        Product::create($data);
+        $this->productService->create($data);
 
         return response()->json(['message' => 'Product created successfully']);
     }
@@ -43,7 +39,7 @@ class ProductController extends Controller
     {
         try {
             return response()->json([
-                'data' => Product::where('uuid', $id)->firstOrFail()
+                'data' => $this->productService->getByUuid($id)
             ]);
         } catch (Exception $e) {
             //throw $th;
@@ -56,12 +52,9 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $id)
     {
+        $data = $request->validated();
         try{
-            $data = $request->validated();
-    
-            $data['slug'] = Str::slug(title: $data['name']);
-            $product = Product::where('uuid', $id)->update($data);
-    
+            $this->productService->update($data, $id);
             return response()->json(['title' => 'Good Job','text' => 'Product updated successfully', 'icon' => 'success']);
 
         } catch (Exception $e) {
@@ -74,24 +67,13 @@ class ProductController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        Product::where('uuid', $id)->firstOrFail()->delete();
-
+        $this->productService->delete($id);
         return response()->json(['message' => 'Product deleted successfully']);
 
     }
 
-    public function serversideTable(Request $request)
+    public function serversideTable(): JsonResponse
     {
-        $product = Product::get();
-
-        return DataTables::of($product)
-        ->addIndexColumn()
-        ->addColumn('action', function ($row) {
-            return '<div class="text-center">
-                        <button class="btn btn-sm btn-success" onclick="editModal(this)" data-id="' . $row->uuid . '">Edit</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteModal(this)" data-id="' . $row->uuid . '">Delete</button>
-                    </div>';
-        })
-        ->make();
+        return $this->productService->getDatatable();
     }
 }
