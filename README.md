@@ -21,6 +21,11 @@ Proyek ini adalah implementasi dari sistem list produk menggunakan framework Lar
 - Validasi input menggunakan JSValidator
 - Menggunakan jQuery Ajax
 
+## Screenshoot
+
+<img src="https://ik.imagekit.io/epras/Screenshot%202025-01-04%20010739.png?updatedAt=1735927853473" alt="logo" width="300">
+<img src="https://ik.imagekit.io/epras/Screenshot%202025-01-04%20011135.png?updatedAt=1735927942043" alt="logo" width="300">
+
 ## Instalasi
 
 1. Clone repositori ini:
@@ -53,4 +58,4 @@ Setelah instalasi selesai, Anda dapat menjalankan server pengembangan Laravel:
 ```bash
 php artisan serve
 ```
-Kemudian, buka browser dan akses `http://localhost:8000` untuk melihat aplikasi.
+Kemudian, buka browser dan akses `http://localhost:8000/products` untuk melihat aplikasi.
